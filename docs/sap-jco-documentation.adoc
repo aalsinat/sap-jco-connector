@@ -1,0 +1,908 @@
+:toc:               left
+:toc-title:         SAP JCo Module
+:toclevels:         2
+:last-update-label!:
+:docinfo:
+:source-highlighter: coderay
+:icons: font
+
+
+= SAP JCo Module Documentation Reference
+
++++
+Connector to integrate your mule applications with SAP ERP Central Component (ECC) using SAP JCo libraries.
++++
+
+
+== Configurations
+---
+[[config]]
+=== Config
+
++++
+SAP JCo connection's configuration. <p> With this connector you can integrate your mule applications with SAP ERP Central Component (ECC).
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+|Name | String | The name for this configuration. Connectors reference the configuration with this name. | | *x*{nbsp}
+| Connection a| <<config_connection, Connection>>
+ | The connection types that can be provided to this configuration. | | *x*{nbsp}
+| Encoding a| String |  +++Default encoding. By default UTF-8+++ |  +++UTF-8+++ | {nbsp}
+| IDoc version a| String |  +++The version of the IDoc. Default 0. See com.sap.conn.idoc.IDocFactory documentation for supported versions.+++ |  +++0+++ | {nbsp}
+| Disable Functions Cache a| Boolean |  +++Disables JCo function templates cache+++ |  +++false+++ | {nbsp}
+| Global timeout for operations. a| Number |  +++Operation timeout. Default 0 disabled+++ |  +++0+++ | {nbsp}
+| The timeout unit a| Enumeration, one of:
+
+** NANOSECONDS
+** MICROSECONDS
+** MILLISECONDS
+** SECONDS
+** MINUTES
+** HOURS
+** DAYS |  +++Operation timeout unit. Default MILLISECONDS+++ |  +++MILLISECONDS+++ | {nbsp}
+| Expiration Policy a| <<ExpirationPolicy>> |  +++Configures the minimum amount of time that a dynamic configuration instance can remain idle before the runtime considers it eligible for expiration. This does not mean that the platform will expire the instance at the exact moment that it becomes eligible. The runtime will actually purge the instances when it sees it fit.+++ |  | {nbsp}
+|======================
+
+==== Connection Types
+[[config_connection]]
+===== Connection
+
++++
+SAP JCo Connection provider <p> For addtional JCo properties see sapjco3 javadoc com.sap.conn.jco.ext.DestinationDataProvider
++++
+
+====== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Authentication a| One of:
+
+* <<username-password>>
+* <<x509-certificate>> |  |  | *x*{nbsp}
+| SAP Server to connect to a| One of:
+
+* <<sap-application-server>>
+* <<sap-message-server>> |  |  | *x*{nbsp}
+| SAP system number a| String |  +++The two-digit system number (sysnr)+++ |  | *x*{nbsp}
+| SAP client ID a| String |  +++Three-digit client number, preserve leading zeros if they appear in the number+++ |  | *x*{nbsp}
+| Destination name a| String |  +++Destination name is used as unique identifier to store JCo connection properties locally. A random destination name will be generated whether leave it blank+++ |  | {nbsp}
+| Login language a| String |  +++ISO two-character language code (for example, EN, DE, FR) or SAP-specific single-character language code.+++ |  +++EN+++ | {nbsp}
+| Additional Client JCo properties a| Object |  +++See sapjco3 javadoc for supported properties (com.sap.conn.jco.ext.DestinationDataProvider)+++ |  | {nbsp}
+| Enable/disable RFC trace a| Boolean |  +++Enable/disable RFC trace (jco.client.trace)+++ |  +++false+++ | {nbsp}
+| Enable/disable CPIC trace a| Enumeration, one of:
+
+** DEFAULT
+** DISABLED
+** LEVEL_1
+** LEVEL_2
+** LEVEL_3 |  +++Enable/disable CPIC trace (jco.client.cpic_trace)+++ |  | {nbsp}
+| Reconnection a| <<Reconnection>> |  +++When the application is deployed, a connectivity test is performed on all connectors. If set to true, deployment will fail if the test doesn't pass after exhausting the associated reconnection strategy+++ |  | {nbsp}
+|======================
+
+==== Associated Operations
+* <<function-instance>> {nbsp}
+* <<function-invoke-qrfc>> {nbsp}
+* <<function-invoke-srfc>> {nbsp}
+* <<function-invoke-trfc>> {nbsp}
+* <<function-schema>> {nbsp}
+* <<idoc-instance>> {nbsp}
+* <<idoc-schema>> {nbsp}
+* <<idoc-send>> {nbsp}
+* <<transaction-confirm>> {nbsp}
+* <<transaction-create>> {nbsp}
+
+==== Associated Sources
+* <<function-source>> {nbsp}
+* <<idoc-source>> {nbsp}
+
+
+== Operations
+
+[[function-instance]]
+=== Function - instance
+`<sap-jco:function-instance>`
+
++++
+Gets a JCoFunction instance, rendered as XML.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Function name a| String |  +++The name of the Function to be retrieved+++ |  | *x*{nbsp}
+| Encoding a| String |  +++Overrides default encoding defined in configuration+++ |  | {nbsp}
+| Disable Functions Cache a| Boolean |  +++Overrides default disable functions cache flag in configuration+++ |  | {nbsp}
+| Transactional Action a| Enumeration, one of:
+
+** ALWAYS_JOIN
+** JOIN_IF_POSSIBLE
+** NOT_SUPPORTED |  +++The type of joining action that operations can take regarding transactions.+++ |  +++JOIN_IF_POSSIBLE+++ | {nbsp}
+| Streaming Strategy a| * <<repeatable-in-memory-stream>>
+* <<repeatable-file-store-stream>>
+* <<non-repeatable-stream>> |  +++Configure if repeatable streams should be used and their behaviour+++ |  | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| Binary
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* SAP-JCO:CONNECTIVITY {nbsp}
+* SAP-JCO:TRANSACTION_ERROR {nbsp}
+* SAP-JCO:COMMUNICATION_ERROR {nbsp}
+* SAP-JCO:INVALID_PARAMETER {nbsp}
+* SAP-JCO:OPERATION_ERROR {nbsp}
+* SAP-JCO:RESOURCE_NOT_FOUND {nbsp}
+* SAP-JCO:XML_PARSER_ERROR {nbsp}
+* SAP-JCO:INVALID_CREDENTIALS {nbsp}
+* SAP-JCO:INVALID_CONFIGURATION {nbsp}
+* SAP-JCO:JCO_SERVER_ERROR {nbsp}
+* SAP-JCO:OPERATION_TIMEOUT {nbsp}
+* SAP-JCO:ABAP_ERROR {nbsp}
+* SAP-JCO:RETRY_EXHAUSTED {nbsp}
+
+
+[[function-invoke-qrfc]]
+=== Function - invoke over qRFC
+`<sap-jco:function-invoke-qrfc>`
+
++++
+Invokes a JCoFunction in queued transactional mode using the qRFC protocol.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Function name a| String |  +++Optional function's name to work with datasense metadata resolution+++ |  +++---+++ | {nbsp}
+| Function XML content a| Binary |  +++Function to invoke as XML content+++ |  +++#[payload]+++ | {nbsp}
+| Transaction Id a| String |  +++The transaction id+++ |  | {nbsp}
+| Queue Name a| String |  +++The inbound queue name to use+++ |  | *x*{nbsp}
+| Encoding a| String |  +++Overrides default encoding defined in configuration+++ |  | {nbsp}
+| Operation Timeout a| Number |  +++Overrides default timeout defined in configuration+++ |  | {nbsp}
+| Operation Timeout Unit a| Enumeration, one of:
+
+** NANOSECONDS
+** MICROSECONDS
+** MILLISECONDS
+** SECONDS
+** MINUTES
+** HOURS
+** DAYS |  +++Overrides default timeout unit defined in configuration+++ |  | {nbsp}
+| Disable Functions Cache a| Boolean |  +++Overrides default disable functions cache flag in configuration+++ |  | {nbsp}
+| Transactional Action a| Enumeration, one of:
+
+** ALWAYS_JOIN
+** JOIN_IF_POSSIBLE
+** NOT_SUPPORTED |  +++The type of joining action that operations can take regarding transactions.+++ |  +++JOIN_IF_POSSIBLE+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* SAP-JCO:CONNECTIVITY {nbsp}
+* SAP-JCO:TRANSACTION_ERROR {nbsp}
+* SAP-JCO:COMMUNICATION_ERROR {nbsp}
+* SAP-JCO:INVALID_PARAMETER {nbsp}
+* SAP-JCO:OPERATION_ERROR {nbsp}
+* SAP-JCO:RESOURCE_NOT_FOUND {nbsp}
+* SAP-JCO:XML_PARSER_ERROR {nbsp}
+* SAP-JCO:INVALID_CREDENTIALS {nbsp}
+* SAP-JCO:INVALID_CONFIGURATION {nbsp}
+* SAP-JCO:JCO_SERVER_ERROR {nbsp}
+* SAP-JCO:OPERATION_TIMEOUT {nbsp}
+* SAP-JCO:ABAP_ERROR {nbsp}
+* SAP-JCO:RETRY_EXHAUSTED {nbsp}
+
+
+[[function-invoke-srfc]]
+=== Function - invoke over sRFC
+`<sap-jco:function-invoke-srfc>`
+
++++
+Invokes a JCoFunction synchronously using the sRFC protocol.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Function name a| String |  +++Optional function's name to work with datasense metadata resolution+++ |  +++---+++ | {nbsp}
+| Function XML content a| Binary |  +++Function to invoke as XML content+++ |  +++#[payload]+++ | {nbsp}
+| Encoding a| String |  +++Overrides default encoding defined in configuration+++ |  | {nbsp}
+| Operation Timeout a| Number |  +++Overrides default timeout defined in configuration+++ |  | {nbsp}
+| Operation Timeout Unit a| Enumeration, one of:
+
+** NANOSECONDS
+** MICROSECONDS
+** MILLISECONDS
+** SECONDS
+** MINUTES
+** HOURS
+** DAYS |  +++Overrides default timeout unit defined in configuration+++ |  | {nbsp}
+| Disable Functions Cache a| Boolean |  +++Overrides default disable functions cache flag in configuration+++ |  | {nbsp}
+| Process BAPI RETURN Parameter a| Boolean |  +++Process BAPI RETURN parameter and throw exception if any error is found+++ |  +++false+++ | {nbsp}
+| Transactional Action a| Enumeration, one of:
+
+** ALWAYS_JOIN
+** JOIN_IF_POSSIBLE
+** NOT_SUPPORTED |  +++The type of joining action that operations can take regarding transactions.+++ |  +++JOIN_IF_POSSIBLE+++ | {nbsp}
+| Streaming Strategy a| * <<repeatable-in-memory-stream>>
+* <<repeatable-file-store-stream>>
+* <<non-repeatable-stream>> |  +++Configure if repeatable streams should be used and their behaviour+++ |  | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| Binary
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* SAP-JCO:CONNECTIVITY {nbsp}
+* SAP-JCO:TRANSACTION_ERROR {nbsp}
+* SAP-JCO:COMMUNICATION_ERROR {nbsp}
+* SAP-JCO:INVALID_PARAMETER {nbsp}
+* SAP-JCO:OPERATION_ERROR {nbsp}
+* SAP-JCO:RESOURCE_NOT_FOUND {nbsp}
+* SAP-JCO:XML_PARSER_ERROR {nbsp}
+* SAP-JCO:INVALID_CREDENTIALS {nbsp}
+* SAP-JCO:INVALID_CONFIGURATION {nbsp}
+* SAP-JCO:JCO_SERVER_ERROR {nbsp}
+* SAP-JCO:OPERATION_TIMEOUT {nbsp}
+* SAP-JCO:ABAP_ERROR {nbsp}
+* SAP-JCO:RETRY_EXHAUSTED {nbsp}
+
+
+[[function-invoke-trfc]]
+=== Function - invoke over tRFC
+`<sap-jco:function-invoke-trfc>`
+
++++
+Invokes a JCoFunction in transactional mode using the tRFC protocol.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Function name a| String |  +++Optional function's name to work with datasense metadata resolution+++ |  +++---+++ | {nbsp}
+| Function XML content a| Binary |  +++Function to invoke as XML content+++ |  +++#[payload]+++ | {nbsp}
+| Transaction Id a| String |  +++The transaction id+++ |  | {nbsp}
+| Encoding a| String |  +++Overrides default encoding defined in configuration+++ |  | {nbsp}
+| Operation Timeout a| Number |  +++Overrides default timeout defined in configuration+++ |  | {nbsp}
+| Operation Timeout Unit a| Enumeration, one of:
+
+** NANOSECONDS
+** MICROSECONDS
+** MILLISECONDS
+** SECONDS
+** MINUTES
+** HOURS
+** DAYS |  +++Overrides default timeout unit defined in configuration+++ |  | {nbsp}
+| Disable Functions Cache a| Boolean |  +++Overrides default disable functions cache flag in configuration+++ |  | {nbsp}
+| Transactional Action a| Enumeration, one of:
+
+** ALWAYS_JOIN
+** JOIN_IF_POSSIBLE
+** NOT_SUPPORTED |  +++The type of joining action that operations can take regarding transactions.+++ |  +++JOIN_IF_POSSIBLE+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* SAP-JCO:CONNECTIVITY {nbsp}
+* SAP-JCO:TRANSACTION_ERROR {nbsp}
+* SAP-JCO:COMMUNICATION_ERROR {nbsp}
+* SAP-JCO:INVALID_PARAMETER {nbsp}
+* SAP-JCO:OPERATION_ERROR {nbsp}
+* SAP-JCO:RESOURCE_NOT_FOUND {nbsp}
+* SAP-JCO:XML_PARSER_ERROR {nbsp}
+* SAP-JCO:INVALID_CREDENTIALS {nbsp}
+* SAP-JCO:INVALID_CONFIGURATION {nbsp}
+* SAP-JCO:JCO_SERVER_ERROR {nbsp}
+* SAP-JCO:OPERATION_TIMEOUT {nbsp}
+* SAP-JCO:ABAP_ERROR {nbsp}
+* SAP-JCO:RETRY_EXHAUSTED {nbsp}
+
+
+[[function-schema]]
+=== Function - generate XML Schema
+`<sap-jco:function-schema>`
+
++++
+Generates a JCoFunction's XML schema using its metadata. Generated XML schema can be used by other applications to prepare valid XML function calls or to define metadata types within mule applications.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Function name a| String |  +++The name of the Function to generate its XML Schema+++ |  | *x*{nbsp}
+| Encoding a| String |  +++Overrides default encoding defined in configuration+++ |  | {nbsp}
+| Disable Functions Cache a| Boolean |  +++Overrides default disable jCoFunction cache flag in configuration+++ |  | {nbsp}
+| Transactional Action a| Enumeration, one of:
+
+** ALWAYS_JOIN
+** JOIN_IF_POSSIBLE
+** NOT_SUPPORTED |  +++The type of joining action that operations can take regarding transactions.+++ |  +++JOIN_IF_POSSIBLE+++ | {nbsp}
+| Streaming Strategy a| * <<repeatable-in-memory-stream>>
+* <<repeatable-file-store-stream>>
+* <<non-repeatable-stream>> |  +++Configure if repeatable streams should be used and their behaviour+++ |  | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| Binary
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* SAP-JCO:CONNECTIVITY {nbsp}
+* SAP-JCO:TRANSACTION_ERROR {nbsp}
+* SAP-JCO:COMMUNICATION_ERROR {nbsp}
+* SAP-JCO:INVALID_PARAMETER {nbsp}
+* SAP-JCO:OPERATION_ERROR {nbsp}
+* SAP-JCO:RESOURCE_NOT_FOUND {nbsp}
+* SAP-JCO:XML_PARSER_ERROR {nbsp}
+* SAP-JCO:INVALID_CREDENTIALS {nbsp}
+* SAP-JCO:INVALID_CONFIGURATION {nbsp}
+* SAP-JCO:JCO_SERVER_ERROR {nbsp}
+* SAP-JCO:OPERATION_TIMEOUT {nbsp}
+* SAP-JCO:ABAP_ERROR {nbsp}
+* SAP-JCO:RETRY_EXHAUSTED {nbsp}
+
+
+[[idoc-instance]]
+=== IDoc - instance
+`<sap-jco:idoc-instance>`
+
++++
+Creates an empty IDoc with EDI_DC segment, rendered as XML.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| IDoc type a| String |  +++The IDoc's type to create an instance+++ |  | *x*{nbsp}
+| Encoding a| String |  +++Overrides default encoding defined in configuration+++ |  | {nbsp}
+| Transactional Action a| Enumeration, one of:
+
+** ALWAYS_JOIN
+** JOIN_IF_POSSIBLE
+** NOT_SUPPORTED |  +++The type of joining action that operations can take regarding transactions.+++ |  +++JOIN_IF_POSSIBLE+++ | {nbsp}
+| Streaming Strategy a| * <<repeatable-in-memory-stream>>
+* <<repeatable-file-store-stream>>
+* <<non-repeatable-stream>> |  +++Configure if repeatable streams should be used and their behaviour+++ |  | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| Binary
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* SAP-JCO:CONNECTIVITY {nbsp}
+* SAP-JCO:TRANSACTION_ERROR {nbsp}
+* SAP-JCO:COMMUNICATION_ERROR {nbsp}
+* SAP-JCO:INVALID_PARAMETER {nbsp}
+* SAP-JCO:OPERATION_ERROR {nbsp}
+* SAP-JCO:RESOURCE_NOT_FOUND {nbsp}
+* SAP-JCO:XML_PARSER_ERROR {nbsp}
+* SAP-JCO:INVALID_CREDENTIALS {nbsp}
+* SAP-JCO:INVALID_CONFIGURATION {nbsp}
+* SAP-JCO:JCO_SERVER_ERROR {nbsp}
+* SAP-JCO:OPERATION_TIMEOUT {nbsp}
+* SAP-JCO:ABAP_ERROR {nbsp}
+* SAP-JCO:RETRY_EXHAUSTED {nbsp}
+
+
+[[idoc-schema]]
+=== IDoc - generate XML Schema
+`<sap-jco:idoc-schema>`
+
++++
+Generate a XML schema for an IDoc using its metadata. Generated XML schema can be used by other applications to prepare valid XML IDoc or to define metadata types within mule applications.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| IDoc type a| String |  +++The IDoc's type to generate XML Schema+++ |  | *x*{nbsp}
+| Encoding a| String |  +++Overrides default encoding defined in configuration+++ |  | {nbsp}
+| Transactional Action a| Enumeration, one of:
+
+** ALWAYS_JOIN
+** JOIN_IF_POSSIBLE
+** NOT_SUPPORTED |  +++The type of joining action that operations can take regarding transactions.+++ |  +++JOIN_IF_POSSIBLE+++ | {nbsp}
+| Streaming Strategy a| * <<repeatable-in-memory-stream>>
+* <<repeatable-file-store-stream>>
+* <<non-repeatable-stream>> |  +++Configure if repeatable streams should be used and their behaviour+++ |  | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| Binary
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* SAP-JCO:CONNECTIVITY {nbsp}
+* SAP-JCO:TRANSACTION_ERROR {nbsp}
+* SAP-JCO:COMMUNICATION_ERROR {nbsp}
+* SAP-JCO:INVALID_PARAMETER {nbsp}
+* SAP-JCO:OPERATION_ERROR {nbsp}
+* SAP-JCO:RESOURCE_NOT_FOUND {nbsp}
+* SAP-JCO:XML_PARSER_ERROR {nbsp}
+* SAP-JCO:INVALID_CREDENTIALS {nbsp}
+* SAP-JCO:INVALID_CONFIGURATION {nbsp}
+* SAP-JCO:JCO_SERVER_ERROR {nbsp}
+* SAP-JCO:OPERATION_TIMEOUT {nbsp}
+* SAP-JCO:ABAP_ERROR {nbsp}
+* SAP-JCO:RETRY_EXHAUSTED {nbsp}
+
+
+[[idoc-send]]
+=== IDoc - send
+`<sap-jco:idoc-send>`
+
++++
+Sends an IDoc package.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| IDoc type a| String |  +++Optional IDoc's type to work with datasense metadata resolution+++ |  +++---+++ | {nbsp}
+| IDoc XML content a| Binary |  +++The IDoc as XML content to send+++ |  +++#[payload]+++ | {nbsp}
+| Transaction Id a| String |  +++The transaction id+++ |  | {nbsp}
+| Queue Name a| String |  +++An optional parameter used in case when the IDoc package shall be sent via queued RFC (qRFC)+++ |  | {nbsp}
+| IDoc version a| String |  +++Overrides the version of the IDoc defined in configuration+++ |  | {nbsp}
+| Operation Timeout a| Number |  +++Overrides default timeout defined in configuration+++ |  | {nbsp}
+| Operation Timeout Unit a| Enumeration, one of:
+
+** NANOSECONDS
+** MICROSECONDS
+** MILLISECONDS
+** SECONDS
+** MINUTES
+** HOURS
+** DAYS |  +++Overrides default timeout unit defined in configuration+++ |  | {nbsp}
+| Transactional Action a| Enumeration, one of:
+
+** ALWAYS_JOIN
+** JOIN_IF_POSSIBLE
+** NOT_SUPPORTED |  +++The type of joining action that operations can take regarding transactions.+++ |  +++JOIN_IF_POSSIBLE+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* SAP-JCO:CONNECTIVITY {nbsp}
+* SAP-JCO:TRANSACTION_ERROR {nbsp}
+* SAP-JCO:COMMUNICATION_ERROR {nbsp}
+* SAP-JCO:INVALID_PARAMETER {nbsp}
+* SAP-JCO:OPERATION_ERROR {nbsp}
+* SAP-JCO:RESOURCE_NOT_FOUND {nbsp}
+* SAP-JCO:XML_PARSER_ERROR {nbsp}
+* SAP-JCO:INVALID_CREDENTIALS {nbsp}
+* SAP-JCO:INVALID_CONFIGURATION {nbsp}
+* SAP-JCO:JCO_SERVER_ERROR {nbsp}
+* SAP-JCO:OPERATION_TIMEOUT {nbsp}
+* SAP-JCO:ABAP_ERROR {nbsp}
+* SAP-JCO:RETRY_EXHAUSTED {nbsp}
+
+
+[[transaction-confirm]]
+=== Transaction - confirm
+`<sap-jco:transaction-confirm>`
+
++++
+Confirms a transaction.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Transaction Id a| String |  +++The transaction id to confirm+++ |  | *x*{nbsp}
+| Transactional Action a| Enumeration, one of:
+
+** ALWAYS_JOIN
+** JOIN_IF_POSSIBLE
+** NOT_SUPPORTED |  +++The type of joining action that operations can take regarding transactions.+++ |  +++JOIN_IF_POSSIBLE+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* SAP-JCO:CONNECTIVITY {nbsp}
+* SAP-JCO:TRANSACTION_ERROR {nbsp}
+* SAP-JCO:COMMUNICATION_ERROR {nbsp}
+* SAP-JCO:INVALID_PARAMETER {nbsp}
+* SAP-JCO:OPERATION_ERROR {nbsp}
+* SAP-JCO:RESOURCE_NOT_FOUND {nbsp}
+* SAP-JCO:XML_PARSER_ERROR {nbsp}
+* SAP-JCO:INVALID_CREDENTIALS {nbsp}
+* SAP-JCO:INVALID_CONFIGURATION {nbsp}
+* SAP-JCO:JCO_SERVER_ERROR {nbsp}
+* SAP-JCO:OPERATION_TIMEOUT {nbsp}
+* SAP-JCO:ABAP_ERROR {nbsp}
+* SAP-JCO:RETRY_EXHAUSTED {nbsp}
+
+
+[[transaction-create]]
+=== Transaction - create
+`<sap-jco:transaction-create>`
+
++++
+Creates a transaction id.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Transactional Action a| Enumeration, one of:
+
+** ALWAYS_JOIN
+** JOIN_IF_POSSIBLE
+** NOT_SUPPORTED |  +++The type of joining action that operations can take regarding transactions.+++ |  +++JOIN_IF_POSSIBLE+++ | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| String
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* SAP-JCO:CONNECTIVITY {nbsp}
+* SAP-JCO:TRANSACTION_ERROR {nbsp}
+* SAP-JCO:COMMUNICATION_ERROR {nbsp}
+* SAP-JCO:INVALID_PARAMETER {nbsp}
+* SAP-JCO:OPERATION_ERROR {nbsp}
+* SAP-JCO:RESOURCE_NOT_FOUND {nbsp}
+* SAP-JCO:XML_PARSER_ERROR {nbsp}
+* SAP-JCO:INVALID_CREDENTIALS {nbsp}
+* SAP-JCO:INVALID_CONFIGURATION {nbsp}
+* SAP-JCO:JCO_SERVER_ERROR {nbsp}
+* SAP-JCO:OPERATION_TIMEOUT {nbsp}
+* SAP-JCO:ABAP_ERROR {nbsp}
+* SAP-JCO:RETRY_EXHAUSTED {nbsp}
+
+
+== Sources
+
+[[function-source]]
+=== Source - receive Function
+`<sap-jco:function-source>`
+
++++
+Registers a JCoServer to process incoming JCoFunctions calls from ABAP programs
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Gateway Host a| String |  +++The gateway host at which the JCoServer should be registered+++ |  | *x*{nbsp}
+| Gateway Service a| String |  +++The gateway service to be used for registering at the gateway, i.e. the symbolic service name or the port number+++ |  | *x*{nbsp}
+| Program Id a| String |  +++The program ID for registering and identifying the JCoServer at the gateway+++ |  | *x*{nbsp}
+| Connection Count a| Number |  +++The number of server connections to register at the gateway+++ |  +++1+++ | {nbsp}
+| Handle only this function a| String |  +++Name of the unique Function to be handled. Received Function that do not match selected one will be silently discarded. If not provided, any Function can be received.+++ |  | {nbsp}
+| Disable Functions Cache a| Boolean |  +++Overrides default disable functions cache flag in configuration+++ |  | {nbsp}
+| Additional Server JCo properties a| Object |  +++See sapjco3 javadoc for supported properties (com.sap.conn.jco.ext.ServerDataProvider)+++ |  | {nbsp}
+| Transactional Action a| Enumeration, one of:
+
+** ALWAYS_BEGIN
+** NONE |  +++The type of beginning action that sources can take regarding transactions.+++ |  +++NONE+++ | {nbsp}
+| Transaction Type a| Enumeration, one of:
+
+** LOCAL
+** XA |  +++The type of transaction to create. Availability will depend on the runtime version.+++ |  +++LOCAL+++ | {nbsp}
+| Primary Node Only a| Boolean |  +++Whether this source should only be executed on the primary node when runnning in Cluster+++ |  | {nbsp}
+| Streaming Strategy a| * <<repeatable-in-memory-stream>>
+* <<repeatable-file-store-stream>>
+* <<non-repeatable-stream>> |  +++Configure if repeatable streams should be used and their behaviour+++ |  | {nbsp}
+| Redelivery Policy a| <<RedeliveryPolicy>> |  +++Defines a policy for processing the redelivery of the same message+++ |  | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+| Function XML response content a| Binary |  +++the JCoFunction as result of processing incoming JCoFunction+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| Binary
+| *Attributes Type* a| <<SapJCoFunctionSourceAttributes>>
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+
+
+[[idoc-source]]
+=== Source - receive IDoc
+`<sap-jco:idoc-source>`
+
++++
+Registers a JCoIDocServer to receive IDocs from ABAP programs
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Gateway Host a| String |  +++The gateway host at which the JCoIDocServer should be registered+++ |  | *x*{nbsp}
+| Gateway Service a| String |  +++The gateway service to be used for registering at the gateway, i.e. the symbolic service name or the port number+++ |  | *x*{nbsp}
+| Program Id a| String |  +++The program ID for registering and identifying the JCoIDocServer at the gateway+++ |  | *x*{nbsp}
+| Connection Count a| Number |  +++The number of server connections to register at the gateway+++ |  +++1+++ | {nbsp}
+| Handle only this IDoc a| String |  +++Unique IDoc type to be handled. Received IDocs that do not match selected one will be silently discarded. If not provided, any IDoc can be received.+++ |  | {nbsp}
+| Additional Server JCo properties a| Object |  +++See sapjco3 javadoc for supported properties (com.sap.conn.jco.ext.ServerDataProvider)+++ |  | {nbsp}
+| Transactional Action a| Enumeration, one of:
+
+** ALWAYS_BEGIN
+** NONE |  +++The type of beginning action that sources can take regarding transactions.+++ |  +++NONE+++ | {nbsp}
+| Transaction Type a| Enumeration, one of:
+
+** LOCAL
+** XA |  +++The type of transaction to create. Availability will depend on the runtime version.+++ |  +++LOCAL+++ | {nbsp}
+| Primary Node Only a| Boolean |  +++Whether this source should only be executed on the primary node when runnning in Cluster+++ |  | {nbsp}
+| Streaming Strategy a| * <<repeatable-in-memory-stream>>
+* <<repeatable-file-store-stream>>
+* <<non-repeatable-stream>> |  +++Configure if repeatable streams should be used and their behaviour+++ |  | {nbsp}
+| Redelivery Policy a| <<RedeliveryPolicy>> |  +++Defines a policy for processing the redelivery of the same message+++ |  | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| Binary
+| *Attributes Type* a| <<SapJCoIDocSourceAttributes>>
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+
+
+== Types
+[[Reconnection]]
+=== Reconnection
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Fails Deployment a| Boolean | When the application is deployed, a connectivity test is performed on all connectors. If set to true, deployment will fail if the test doesn't pass after exhausting the associated reconnection strategy |  | 
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> | The reconnection strategy to use |  | 
+|======================
+
+[[reconnect]]
+=== Reconnect
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Frequency a| Number | How often (in ms) to reconnect |  | 
+| Count a| Number | How many reconnection attempts to make |  | 
+|======================
+
+[[reconnect-forever]]
+=== Reconnect Forever
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Frequency a| Number | How often (in ms) to reconnect |  | 
+|======================
+
+[[ExpirationPolicy]]
+=== Expiration Policy
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Max Idle Time a| Number | A scalar time value for the maximum amount of time a dynamic configuration instance should be allowed to be idle before it's considered eligible for expiration |  | 
+| Time Unit a| Enumeration, one of:
+
+** NANOSECONDS
+** MICROSECONDS
+** MILLISECONDS
+** SECONDS
+** MINUTES
+** HOURS
+** DAYS | A time unit that qualifies the maxIdleTime attribute |  | 
+|======================
+
+[[SapJCoFunctionSourceAttributes]]
+=== Sap J Co Function Source Attributes
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Incoming Function Name a| String |  |  | 
+| Transaction Id a| String |  |  | 
+|======================
+
+[[repeatable-in-memory-stream]]
+=== Repeatable In Memory Stream
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Initial Buffer Size a| Number | This is the amount of memory that will be allocated in order to consume the stream and provide random access to it. If the stream contains more data than can be fit into this buffer, then it will be expanded by according to the bufferSizeIncrement attribute, with an upper limit of maxInMemorySize. |  | 
+| Buffer Size Increment a| Number | This is by how much will be buffer size by expanded if it exceeds its initial size. Setting a value of zero or lower will mean that the buffer should not expand, meaning that a STREAM_MAXIMUM_SIZE_EXCEEDED error will be raised when the buffer gets full. |  | 
+| Max Buffer Size a| Number | This is the maximum amount of memory that will be used. If more than that is used then a STREAM_MAXIMUM_SIZE_EXCEEDED error will be raised. A value lower or equal to zero means no limit. |  | 
+| Buffer Unit a| Enumeration, one of:
+
+** BYTE
+** KB
+** MB
+** GB | The unit in which all these attributes are expressed |  | 
+|======================
+
+[[repeatable-file-store-stream]]
+=== Repeatable File Store Stream
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| In Memory Size a| Number | Defines the maximum memory that the stream should use to keep data in memory. If more than that is consumed then it will start to buffer the content on disk. |  | 
+| Buffer Unit a| Enumeration, one of:
+
+** BYTE
+** KB
+** MB
+** GB | The unit in which maxInMemorySize is expressed |  | 
+|======================
+
+[[RedeliveryPolicy]]
+=== Redelivery Policy
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Max Redelivery Count a| Number | The maximum number of times a message can be redelivered and processed unsuccessfully before triggering process-failed-message |  | 
+| Use Secure Hash a| Boolean | Whether to use a secure hash algorithm to identify a redelivered message |  | 
+| Message Digest Algorithm a| String | The secure hashing algorithm to use. If not set, the default is SHA-256. |  | 
+| Id Expression a| String | Defines one or more expressions to use to determine when a message has been redelivered. This property may only be set if useSecureHash is false. |  | 
+| Object Store a| <<ObjectStore>> | The object store where the redelivery counter for each message is going to be stored. |  | 
+|======================
+
+[[SapJCoIDocSourceAttributes]]
+=== Sap J Co I Doc Source Attributes
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Incoming I Doc Name a| String |  |  | 
+| Incoming I Doc Type a| String |  |  | 
+| Transaction Id a| String |  |  | 
+|======================
+
+[[username-password]]
+=== Username Password
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Username a| String | User name for logging into the SAP system |  | x
+| Password a| String | Password for logging into the SAP system |  | x
+|======================
+
+[[x509-certificate]]
+=== X509 Certificate
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Path a| String | Path to an X.509 certificate to be used as logon ticket. |  | 
+|======================
+
+[[sap-application-server]]
+=== Sap Application Server
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Host a| String | The host of the SAP application server. |  | x
+|======================
+
+[[sap-message-server]]
+=== Sap Message Server
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Host a| String | SAP message server host |  | x
+| System Id a| String | SAP System ID (SID) |  | x
+| Service a| String | SAP message server service or port number (optional) |  | 
+| Group a| String | Logon group name of SAP application servers (Optional, default is PUBLIC) |  | 
+| Router a| String | SAProuter string to use for networks being protected by a firewall |  | 
+|======================
+

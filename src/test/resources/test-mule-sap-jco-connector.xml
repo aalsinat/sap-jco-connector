@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:sap-jco="http://www.mulesoft.org/schema/mule/sap-jco" xmlns="http://www.mulesoft.org/schema/mule/core"
+  xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/sap-jco http://www.mulesoft.org/schema/mule/sap-jco/current/mule-sap-jco.xsd">
+
+  <sap-jco:config name="SAP_JCo_Config">
+    <sap-jco:connection sysnr="00" client="100">
+      <sap-jco:authentication>
+        <sap-jco:username-password username="MNGOSBDEV" password="bUVaUtZ8oMJpzdxDdoDGFjmR-XBUcHYbGAZbgnCo" />
+      </sap-jco:authentication>
+      <sap-jco:remote-host-config>
+        <sap-jco:sap-application-server host="vhmans4dci.intranet.mango.es" />
+      </sap-jco:remote-host-config>
+    </sap-jco:connection>
+  </sap-jco:config>
+
+  <flow name="send-idoc" doc:id="3fbd52ef-8c0b-4160-a94b-2165f9e68385">
+    <sap-jco:idoc-instance idocType="MBGMCR04"
+      doc:name="Create MBGMCR04 IDoc Instance (just to auto-generate basic data for EDI_DC segment)"
+      doc:id="dc14dac6-6c5e-414b-98cc-1478ea305f06" config-ref="SAP_JCo_Config" />
+    <sap-jco:idoc-send doc:name="Send ONE MBGMCR04 IDoc" doc:id="6d7f539e-e9a5-456a-89a4-aa758945d609"
+      config-ref="SAP_JCo_Config" idocType="MBGMCR04">
+      <sap-jco:content><![CDATA[#[%dw 2.0
+output application/xml
+---
+{
+	MBGMCR04: {
+		IDOC @(BEGIN: '1') : {
+			EDI_DC40 @(SEGMENT: '1'): payload.MBGMCR04.IDOC.EDI_DC40,
+			E1MBGMCR @(SEGMENT: '1'): {
+				E1BP2017_GM_HEAD_01 @(SEGMENT: '1'): {
+					PSTNG_DATE: '20190604',
+					REF_DOC_NO: '34ET2820_20190311',
+					HEADER_TXT: 'REF_PROV'
+				},
+				E1BP2017_GM_CODE @(SEGMENT: '1'): {
+					GM_CODE: '01'
+				},
+				E1BP2017_GM_ITEM_CREATE @(SEGMENT: '1'): {
+					PLANT: 'D001',
+					ENTRY_QNT: '1200',
+					PO_NUMBER: '4509001284',
+					ITEM_TEXT: '430677930202',
+					EAN_UPC: '8431729269653'
+				},
+				E1BP2017_GM_ITEM_CREATE @(SEGMENT: '1'): {
+					PLANT: 'D001',
+					ENTRY_QNT: '1100',
+					PO_NUMBER: '4509001284',
+					ITEM_TEXT: '430677930201',
+					EAN_UPC: '8431729269632'
+				},
+				"_-SPE_-E1BP2017_SERVICEPART_D" @(SEGMENT: '1'): {
+					DELIV_NUMBER: '123456789',
+					HU_NUMBER: '112559136'
+				},
+			}
+		}
+	}
+}]]]></sap-jco:content>
+    </sap-jco:idoc-send>
+  </flow>
+  <flow name="send-idoc-package" doc:id="67273a90-94ea-4695-a3f5-1f3ae407d9bb">
+    <sap-jco:transaction-create doc:name="Transaction - create" doc:id="6aa8c810-a0be-4deb-b5b6-9e2674796207"
+      config-ref="SAP_JCo_Config" target="transactionID" />
+    <sap-jco:idoc-instance idocType="MBGMCR04"
+      doc:name="Create MBGMCR04 IDoc Instance (just to auto-generate basic data for EDI_DC segment)"
+      doc:id="76719720-b8c3-4ba1-aba0-927cdc070a6e" config-ref="SAP_JCo_Config" />
+    <sap-jco:idoc-send doc:name="Send THREE MBGMCR04 IDoc (as IDocDocumentList)"
+      doc:id="32b36178-a927-492b-bf05-d0d5872553d8" config-ref="SAP_JCo_Config" idocType="MBGMCR04"
+      transactionId="#[vars.transactionID]">
+      <sap-jco:content><![CDATA[#[%dw 2.0
+output application/xml
+---
+{
+	MBGMCR04: {
+		IDOC @(BEGIN: '1') : {
+			EDI_DC40 @(SEGMENT: '1'): payload.MBGMCR04.IDOC.EDI_DC40,
+			E1MBGMCR @(SEGMENT: '1'): {
+				E1BP2017_GM_HEAD_01 @(SEGMENT: '1'): {
+					PSTNG_DATE: '20190604',
+					REF_DOC_NO: '34ET2820_20190311',
+					HEADER_TXT: 'REF_PROV'
+				},
+				E1BP2017_GM_CODE @(SEGMENT: '1'): {
+					GM_CODE: '01'
+				},
+				E1BP2017_GM_ITEM_CREATE @(SEGMENT: '1'): {
+					PLANT: 'D001',
+					ENTRY_QNT: '1200',
+					PO_NUMBER: '4509001284',
+					ITEM_TEXT: '430677930202',
+					EAN_UPC: '8431729269653'
+				},
+				E1BP2017_GM_ITEM_CREATE @(SEGMENT: '1'): {
+					PLANT: 'D001',
+					ENTRY_QNT: '1100',
+					PO_NUMBER: '4509001284',
+					ITEM_TEXT: '430677930201',
+					EAN_UPC: '8431729269632'
+				},
+				"_-SPE_-E1BP2017_SERVICEPART_D" @(SEGMENT: '1'): {
+					DELIV_NUMBER: '123456789',
+					HU_NUMBER: '112559136'
+				},
+			}
+		},
+		IDOC @(BEGIN: '1') : {
+			EDI_DC40 @(SEGMENT: '1'): payload.MBGMCR04.IDOC.EDI_DC40,
+			E1MBGMCR @(SEGMENT: '1'): {
+				E1BP2017_GM_HEAD_01 @(SEGMENT: '1'): {
+					PSTNG_DATE: '20190604',
+					REF_DOC_NO: '34ET2820_20190311',
+					HEADER_TXT: 'REF_PROV'
+				},
+				E1BP2017_GM_CODE @(SEGMENT: '1'): {
+					GM_CODE: '01'
+				},
+				E1BP2017_GM_ITEM_CREATE @(SEGMENT: '1'): {
+					PLANT: 'D001',
+					ENTRY_QNT: '1200',
+					PO_NUMBER: '4509001284',
+					ITEM_TEXT: '430677930202',
+					EAN_UPC: '8431729269653'
+				},
+				E1BP2017_GM_ITEM_CREATE @(SEGMENT: '1'): {
+					PLANT: 'D001',
+					ENTRY_QNT: '1100',
+					PO_NUMBER: '4509001284',
+					ITEM_TEXT: '430677930201',
+					EAN_UPC: '8431729269632'
+				},
+				"_-SPE_-E1BP2017_SERVICEPART_D" @(SEGMENT: '1'): {
+					DELIV_NUMBER: '123456789',
+					HU_NUMBER: '112559136'
+				},
+			}
+		},
+		IDOC @(BEGIN: '1') : {
+			EDI_DC40 @(SEGMENT: '1'): payload.MBGMCR04.IDOC.EDI_DC40,
+			E1MBGMCR @(SEGMENT: '1'): {
+				E1BP2017_GM_HEAD_01 @(SEGMENT: '1'): {
+					PSTNG_DATE: '20190604',
+					REF_DOC_NO: '34ET2820_20190311',
+					HEADER_TXT: 'REF_PROV'
+				},
+				E1BP2017_GM_CODE @(SEGMENT: '1'): {
+					GM_CODE: '01'
+				},
+				E1BP2017_GM_ITEM_CREATE @(SEGMENT: '1'): {
+					PLANT: 'D001',
+					ENTRY_QNT: '1200',
+					PO_NUMBER: '4509001284',
+					ITEM_TEXT: '430677930202',
+					EAN_UPC: '8431729269653'
+				},
+				E1BP2017_GM_ITEM_CREATE @(SEGMENT: '1'): {
+					PLANT: 'D001',
+					ENTRY_QNT: '1100',
+					PO_NUMBER: '4509001284',
+					ITEM_TEXT: '430677930201',
+					EAN_UPC: '8431729269632'
+				},
+				"_-SPE_-E1BP2017_SERVICEPART_D" @(SEGMENT: '1'): {
+					DELIV_NUMBER: '123456789',
+					HU_NUMBER: '112559136'
+				},
+			}
+		}
+	}
+}]]]></sap-jco:content>
+    </sap-jco:idoc-send>
+    <sap-jco:transaction-confirm doc:name="Transaction - confirm" doc:id="d37bcb16-0e43-471a-a3be-f041104bb316"
+      config-ref="SAP_JCo_Config" transactionId="#[vars.transactionID]" />
+  </flow>
+
+  <flow name="invoke-function-list-idoc-types" doc:id="58dae3bd-e369-41f7-b6cf-53b951ee8f08">
+    <sap-jco:function-invoke-srfc doc:name="invoke IDOCTYPES_LIST_WITH_MESSAGES to retrieve a list of IDocs"
+      doc:id="2da809bb-68d3-4833-a827-37745214beba" config-ref="SAP_JCo_Config"
+      functionName="IDOCTYPES_LIST_WITH_MESSAGES">
+      <sap-jco:content><![CDATA[#[%dw 2.0
+output application/xml
+---
+{
+	IDOCTYPES_LIST_WITH_MESSAGES:{
+
+	}
+}]]]></sap-jco:content>
+    </sap-jco:function-invoke-srfc>
+    <set-payload value="#[%dw 2.0
+output application/json
+---
+flatten(payload.IDOCTYPES_LIST_WITH_MESSAGES.tables.PT_IDOCTYPES.*'row' map() ->
+{
+	idocType:$.IDOCTYP,
+	description: $.DESCRP
+}) as Array
+
+++
+
+flatten(payload.IDOCTYPES_LIST_WITH_MESSAGES.tables.PT_EXTTYPES.*'row' map() ->
+{
+	idocType:$.IDOCTYP,
+	idocExtension: $.CIMTYP default '',
+	description: $.DESCRP
+}) as Array]" />
+  </flow>
+  <flow name="invoke-function-list-of-functions" doc:id="e1ee29f9-620c-41a2-b80a-8c0a48565e41">
+    <sap-jco:function-invoke-srfc
+      doc:name="invoke RFC_FUNCTION_SEARCH to retrieve a list of functions that match name RFC_CHANGE_*"
+      doc:id="9de75b10-6003-4a22-ba35-656ae80794b5" config-ref="SAP_JCo_Config" functionName="RFC_FUNCTION_SEARCH">
+      <sap-jco:content><![CDATA[#[%dw 2.0
+output application/xml
+---
+{
+	RFC_FUNCTION_SEARCH: {
+		"import": {
+			FUNCNAME: 'RFC_CHANGE_*'
+		}
+	}
+}]]]></sap-jco:content>
+    </sap-jco:function-invoke-srfc>
+    <set-payload value="#[%dw 2.0
+output application/json
+---
+flatten(payload.RFC_FUNCTION_SEARCH.tables.FUNCTIONS.*'row' map() ->
+{
+	functionName:$.FUNCNAME,
+	description: $.STEXT
+})]" />
+  </flow>
+  <flow name="function-instance" doc:id="108dc876-5330-4ae8-9147-3222361fe13c">
+    <sap-jco:function-instance functionName="RFC_FUNCTION_SEARCH" doc:name="RFC_FUNCTION_SEARCH Function - instance"
+      doc:id="5fffbbc9-2a65-4400-a42e-7f7de75c7ff0" config-ref="SAP_JCo_Config" />
+  </flow>
+  <flow name="function-schema" doc:id="392cecbe-3319-47c6-a881-b22f79e80b95">
+    <sap-jco:function-schema functionName="RFC_FUNCTION_SEARCH" doc:name="RFC_FUNCTION_SEARCH generate XML Schema"
+      doc:id="ea7a4284-a22d-4c80-aab1-686c7ce808f9" config-ref="SAP_JCo_Config" />
+  </flow>
+  <flow name="idoc-schema" doc:id="ed2a243e-2c9d-4198-9fe0-4d6efcfe26b1">
+    <sap-jco:idoc-schema idocType="MBGMCR04" doc:name="MBGMCR04 - generate IDoc XML Schema"
+      doc:id="564056c6-cfdc-4532-b3b3-3476a810f29a" config-ref="SAP_JCo_Config" />
+  </flow>
+</mule>
+
